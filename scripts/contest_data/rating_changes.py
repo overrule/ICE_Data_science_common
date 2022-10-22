@@ -7,7 +7,7 @@ official_contests = requests.get("https://codeforces.com/api/contest.list?gym=fa
 
 for contest in official_contests["result"]:
 
-    time.sleep(0.1)
+    time.sleep(3)
 
     id = contest["id"]
     rating_changes = requests.get(f"https://codeforces.com/api/contest.ratingChanges?contestId={id}").json()
@@ -31,4 +31,4 @@ for contest in official_contests["result"]:
         data.append([handle, old_rating, new_rating])
 
     df = pd.DataFrame(data, columns = ['Handle', 'oldRating', 'newRating'])
-    df.to_csv(f"../../data/contest_deltas/{id}.csv")
+    df.to_csv(f"../../contest_data/rating_changes/{id}.csv")
