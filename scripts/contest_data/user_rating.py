@@ -5,11 +5,17 @@ import pandas as pd
 
 users = {}
 lf = 0
-for file in os.listdir("../../contest_data/rating_changes/"):
+
+official_contests = requests.get("https://codeforces.com/api/contest.list?gym=false").json()
+
+for contest in reversed(official_contests["result"]):
     
-    lf = file
-    temp_df = pd.read_csv("../../contest_data/rating_changes/" + file)
-    
+    lf = contest["id"]
+    try:
+        temp_df = pd.read_csv("../../contest_data/rating_changes/" + str(contest["id"]) + ".csv")
+    except:
+        print(f"Unable to read file {lf}.csv")
+        continue
     for ind, row in temp_df.iterrows():
         if temp_df["Handle"][ind] in users:   
             users[temp_df["Handle"][ind]].pop()
@@ -18,14 +24,8 @@ for file in os.listdir("../../contest_data/rating_changes/"):
         else:
             users[temp_df["Handle"][ind]] = [temp_df["oldRating"][ind]]
             users[temp_df["Handle"][ind]].append(temp_df["oldRating"][ind])
+    print(f"Successfully read file {lf}.csv")
 
-mlen = 10
-bad = []
-for k in users:
-    if(len(users[k]) <= mlen):
-        bad.append(k)
-for b in bad:
-    users.pop(b)
 for k in users:
     users[k] = [users[k]]
 
